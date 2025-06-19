@@ -7,14 +7,18 @@ export class LLMService {
   static async analyzeQuery(request: AnalysisRequest): Promise<AnalysisResponse> {
     const prompt = buildPrompt(request);
     
-    try {
-      // Check if API key is available
-      const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-      
-      if (!apiKey || apiKey === 'your_openai_api_key_here') {
-        throw new Error('OpenAI API key not configured. Please add your API key to the .env file.');
-      }
+    // Mock response fallback if API key is missing
+    const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+    if (!apiKey || apiKey === 'your_openai_api_key_here') {
+      return {
+        answer: 'This is a mock CivicScan response. In production, this would analyze your question and document using AI.',
+        timestamp: new Date().toISOString(),
+        request,
+        tokensUsed: 0
+      };
+    }
 
+    try {
       const response = await fetch(this.API_ENDPOINT, {
         method: 'POST',
         headers: {

@@ -1,6 +1,10 @@
 export interface State {
-  code: string;
   name: string;
+}
+
+export interface Country {
+  name: string;
+  states: string[];
 }
 
 export interface Language {
@@ -10,7 +14,8 @@ export interface Language {
 
 export interface AppState {
   question: string;
-  selectedState: string;
+  selectedCountry?: string;
+  selectedRegion?: string;
   uploadedFile: File | null;
   response: string;
   selectedLanguage: string;
@@ -20,7 +25,8 @@ export interface AppState {
 export interface AnalysisRequest {
   question: string;
   documentText?: string;
-  state: string;
+  country?: string;
+  region?: string;
   fileName?: string;
 }
 
@@ -35,7 +41,8 @@ export interface StoredInteraction {
   id: string;
   question: string;
   documentName?: string;
-  state: string;
+  country?: string;
+  region?: string;
   answer: string;
   timestamp: string;
   tokensUsed?: number;

@@ -10,7 +10,8 @@ import { StorageService } from './services/storageService';
 const App: React.FC = () => {
   const [state, setState] = useState<AppState>({
     question: '',
-    selectedState: '',
+    selectedCountry: '',
+    selectedRegion: '',
     uploadedFile: null,
     response: '',
     selectedLanguage: 'en',
@@ -24,8 +25,12 @@ const App: React.FC = () => {
     setError('');
   };
 
-  const handleStateChange = (selectedState: string) => {
-    setState(prev => ({ ...prev, selectedState }));
+  const handleCountryChange = (selectedCountry: string) => {
+    setState(prev => ({ ...prev, selectedCountry, selectedRegion: '' }));
+  };
+
+  const handleRegionChange = (selectedRegion: string) => {
+    setState(prev => ({ ...prev, selectedRegion }));
   };
 
   const handleFileChange = (uploadedFile: File | null) => {
@@ -47,8 +52,12 @@ const App: React.FC = () => {
         throw new Error('Please enter a question or upload a document.');
       }
 
-      if (!state.selectedState) {
-        throw new Error('Please select a state for location-specific information.');
+      if (!state.selectedCountry) {
+        throw new Error('Please select a country.');
+      }
+
+      if (!state.selectedRegion) {
+        throw new Error('Please select a region/state for location-specific information.');
       }
 
       // Extract text from uploaded document if present
@@ -69,7 +78,8 @@ const App: React.FC = () => {
       const analysisRequest: AnalysisRequest = {
         question: state.question.trim(),
         documentText: documentText || undefined,
-        state: state.selectedState,
+        country: state.selectedCountry,
+        region: state.selectedRegion,
         fileName: state.uploadedFile?.name
       };
 
@@ -122,12 +132,14 @@ const App: React.FC = () => {
       <main className="pb-12">
         <InputSection
           question={state.question}
-          selectedState={state.selectedState}
+          selectedCountry={state.selectedCountry || ''}
+          selectedRegion={state.selectedRegion || ''}
           uploadedFile={state.uploadedFile}
           isLoading={state.isLoading}
           error={error}
           onQuestionChange={handleQuestionChange}
-          onStateChange={handleStateChange}
+          onCountryChange={handleCountryChange}
+          onRegionChange={handleRegionChange}
           onFileChange={handleFileChange}
           onAnalyze={handleAnalyze}
         />
@@ -135,7 +147,8 @@ const App: React.FC = () => {
         <OutputSection
           response={state.response}
           selectedLanguage={state.selectedLanguage}
-          selectedState={state.selectedState ? getStateName(state.selectedState) : ''}
+          selectedCountry={state.selectedCountry || ''}
+          selectedRegion={state.selectedRegion || ''}
           uploadedFileName={state.uploadedFile?.name}
           onLanguageChange={handleLanguageChange}
           onPlayVoice={handlePlayVoice}

@@ -1,11 +1,13 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
 import { Volume2, Globe, FileText, MapPin } from 'lucide-react';
 import { Language } from '../types';
 
 interface OutputSectionProps {
   response: string;
   selectedLanguage: string;
-  selectedState: string;
+  selectedCountry: string;
+  selectedRegion: string;
   uploadedFileName?: string;
   onLanguageChange: (language: string) => void;
   onPlayVoice: () => void;
@@ -29,7 +31,8 @@ const LANGUAGES: Language[] = [
 const OutputSection: React.FC<OutputSectionProps> = ({
   response,
   selectedLanguage,
-  selectedState,
+  selectedCountry,
+  selectedRegion,
   uploadedFileName,
   onLanguageChange,
   onPlayVoice
@@ -62,10 +65,10 @@ const OutputSection: React.FC<OutputSectionProps> = ({
           <div>
             <h2 className="text-xl font-semibold text-gray-900 mb-2">Analysis Result</h2>
             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
-              {selectedState && (
+              {selectedCountry && selectedRegion && (
                 <div className="flex items-center space-x-1">
                   <MapPin className="w-4 h-4" />
-                  <span>{selectedState}</span>
+                  <span>{selectedRegion}, {selectedCountry}</span>
                 </div>
               )}
               {uploadedFileName && (
@@ -76,7 +79,6 @@ const OutputSection: React.FC<OutputSectionProps> = ({
               )}
             </div>
           </div>
-          
           <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
             <button
               onClick={onPlayVoice}
@@ -85,7 +87,6 @@ const OutputSection: React.FC<OutputSectionProps> = ({
               <Volume2 className="w-4 h-4" />
               <span className="text-sm font-medium">Play Voice Summary</span>
             </button>
-            
             <div className="flex items-center space-x-2">
               <Globe className="w-4 h-4 text-gray-600" />
               <select
@@ -102,19 +103,17 @@ const OutputSection: React.FC<OutputSectionProps> = ({
             </div>
           </div>
         </div>
-        
         <div className="bg-gray-50 rounded-xl p-6 max-h-96 overflow-y-auto">
-          <div className="prose prose-blue max-w-none">
-            <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+          <div className="prose prose-blue max-w-none whitespace-pre-wrap text-gray-800 leading-relaxed">
+            <ReactMarkdown>
               {response}
-            </div>
+            </ReactMarkdown>
           </div>
         </div>
-
         <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
           <p className="text-sm text-yellow-800">
             <strong>Important:</strong> This information is for general guidance only and should not be considered legal advice. 
-            For specific legal matters, please consult with a qualified attorney licensed in your state.
+            For specific legal matters, please consult with a qualified attorney licensed in your region.
           </p>
         </div>
       </div>

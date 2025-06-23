@@ -1,80 +1,27 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Upload, FileText, Loader2, AlertCircle, HelpCircle } from 'lucide-react';
-import { State } from '../types';
+import { Country } from '../types';
 
 interface InputSectionProps {
   question: string;
-  selectedState: string;
+  selectedCountry: string;
+  selectedRegion: string;
   uploadedFile: File | null;
   isLoading: boolean;
   error?: string;
   onQuestionChange: (question: string) => void;
-  onStateChange: (state: string) => void;
+  onCountryChange: (country: string) => void;
+  onRegionChange: (region: string) => void;
   onFileChange: (file: File | null) => void;
   onAnalyze: () => void;
 }
 
-const US_STATES: State[] = [
-  { code: '', name: 'Select a state...' },
-  { code: 'AL', name: 'Alabama' },
-  { code: 'AK', name: 'Alaska' },
-  { code: 'AZ', name: 'Arizona' },
-  { code: 'AR', name: 'Arkansas' },
-  { code: 'CA', name: 'California' },
-  { code: 'CO', name: 'Colorado' },
-  { code: 'CT', name: 'Connecticut' },
-  { code: 'DE', name: 'Delaware' },
-  { code: 'FL', name: 'Florida' },
-  { code: 'GA', name: 'Georgia' },
-  { code: 'HI', name: 'Hawaii' },
-  { code: 'ID', name: 'Idaho' },
-  { code: 'IL', name: 'Illinois' },
-  { code: 'IN', name: 'Indiana' },
-  { code: 'IA', name: 'Iowa' },
-  { code: 'KS', name: 'Kansas' },
-  { code: 'KY', name: 'Kentucky' },
-  { code: 'LA', name: 'Louisiana' },
-  { code: 'ME', name: 'Maine' },
-  { code: 'MD', name: 'Maryland' },
-  { code: 'MA', name: 'Massachusetts' },
-  { code: 'MI', name: 'Michigan' },
-  { code: 'MN', name: 'Minnesota' },
-  { code: 'MS', name: 'Mississippi' },
-  { code: 'MO', name: 'Missouri' },
-  { code: 'MT', name: 'Montana' },
-  { code: 'NE', name: 'Nebraska' },
-  { code: 'NV', name: 'Nevada' },
-  { code: 'NH', name: 'New Hampshire' },
-  { code: 'NJ', name: 'New Jersey' },
-  { code: 'NM', name: 'New Mexico' },
-  { code: 'NY', name: 'New York' },
-  { code: 'NC', name: 'North Carolina' },
-  { code: 'ND', name: 'North Dakota' },
-  { code: 'OH', name: 'Ohio' },
-  { code: 'OK', name: 'Oklahoma' },
-  { code: 'OR', name: 'Oregon' },
-  { code: 'PA', name: 'Pennsylvania' },
-  { code: 'RI', name: 'Rhode Island' },
-  { code: 'SC', name: 'South Carolina' },
-  { code: 'SD', name: 'South Dakota' },
-  { code: 'TN', name: 'Tennessee' },
-  { code: 'TX', name: 'Texas' },
-  { code: 'UT', name: 'Utah' },
-  { code: 'VT', name: 'Vermont' },
-  { code: 'VA', name: 'Virginia' },
-  { code: 'WA', name: 'Washington' },
-  { code: 'WV', name: 'West Virginia' },
-  { code: 'WI', name: 'Wisconsin' },
-  { code: 'WY', name: 'Wyoming' },
-  { code: 'DC', name: 'District of Columbia' }
-];
-
 const EXAMPLE_QUESTIONS = [
-  "What are my rights as a tenant in this state?",
+  "What are my rights as a tenant in this region?",
   "How do I file for unemployment benefits?",
   "What are the requirements for starting a small business?",
   "How do I register to vote?",
-  "What are the divorce laws in this state?",
+  "What are the divorce laws in this region?",
   "How do I file a complaint against my employer?",
   "What are my rights during a traffic stop?",
   "How do I apply for disability benefits?"
@@ -82,16 +29,34 @@ const EXAMPLE_QUESTIONS = [
 
 const InputSection: React.FC<InputSectionProps> = ({
   question,
-  selectedState,
+  selectedCountry,
+  selectedRegion,
   uploadedFile,
   isLoading,
   error,
   onQuestionChange,
-  onStateChange,
+  onCountryChange,
+  onRegionChange,
   onFileChange,
   onAnalyze
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Load countries from JSON
+  const [countries, setCountries] = useState<Country[]>([]);
+  const [regionOptions, setRegionOptions] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetch('/countries+states.json')
+      .then(res => res.json())
+      .then((data: Country[]) => setCountries(data))
+      .catch(err => console.error('Failed to load countries', err));
+  }, []);
+
+  useEffect(() => {
+    const country = countries.find(c => c.name === selectedCountry);
+    setRegionOptions(country?.states || []);
+  }, [selectedCountry, countries]);
 
   const handleFileClick = () => {
     fileInputRef.current?.click();
@@ -111,7 +76,7 @@ const InputSection: React.FC<InputSectionProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if ((question.trim() || uploadedFile) && selectedState) {
+    if ((question.trim() || uploadedFile) && selectedRegion) {
       onAnalyze();
     }
   };
@@ -154,7 +119,6 @@ const InputSection: React.FC<InputSectionProps> = ({
               className="w-full h-32 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-200 text-gray-900 placeholder-gray-500"
               disabled={isLoading}
             />
-            
             {!question.trim() && (
               <div className="mt-3">
                 <div className="flex items-center space-x-2 mb-2">
@@ -180,21 +144,41 @@ const InputSection: React.FC<InputSectionProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="state" className="block text-sm font-semibold text-gray-700 mb-3">
-                Select your state <span className="text-red-500">*</span>
+              <label htmlFor="country" className="block text-sm font-semibold text-gray-700 mb-3">
+                Select your country <span className="text-red-500">*</span>
               </label>
               <select
-                id="state"
-                value={selectedState}
-                onChange={(e) => onStateChange(e.target.value)}
+                id="country"
+                value={selectedCountry}
+                onChange={e => {
+                  onCountryChange(e.target.value);
+                  onRegionChange('');
+                }}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 bg-white"
                 disabled={isLoading}
                 required
               >
-                {US_STATES.map((state) => (
-                  <option key={state.code} value={state.code}>
-                    {state.name}
-                  </option>
+                <option value="">Select a country...</option>
+                {countries.map(country => (
+                  <option key={country.name} value={country.name}>{country.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="region" className="block text-sm font-semibold text-gray-700 mb-3">
+                Select your region/state <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="region"
+                value={selectedRegion}
+                onChange={e => onRegionChange(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 bg-white"
+                disabled={isLoading || !selectedCountry}
+                required
+              >
+                <option value="">Select a region...</option>
+                {regionOptions.map(region => (
+                  <option key={region} value={region}>{region}</option>
                 ))}
               </select>
             </div>
@@ -257,7 +241,7 @@ const InputSection: React.FC<InputSectionProps> = ({
           <div className="pt-4">
             <button
               type="submit"
-              disabled={isLoading || (!question.trim() && !uploadedFile) || !selectedState}
+              disabled={isLoading || (!question.trim() && !uploadedFile) || !selectedRegion}
               className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center space-x-2"
             >
               {isLoading ? (
@@ -270,8 +254,8 @@ const InputSection: React.FC<InputSectionProps> = ({
               )}
             </button>
             <p className="text-xs text-gray-500 text-center mt-2">
-              {!selectedState && "Please select a state to continue"}
-              {selectedState && !question.trim() && !uploadedFile && "Enter a question or upload a document"}
+              {!selectedRegion && "Please select a region to continue"}
+              {selectedRegion && !question.trim() && !uploadedFile && "Enter a question or upload a document"}
             </p>
           </div>
         </form>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import InputSection from './components/InputSection';
 import OutputSection from './components/OutputSection';
@@ -6,6 +6,7 @@ import { AppState, AnalysisRequest } from './types';
 import { DocumentProcessor } from './services/documentProcessor';
 import { LLMService } from './services/llmService';
 import { StorageService } from './services/storageService';
+import { initializeElevenLabs, getElevenLabsService } from './services/elevenLabsService';
 
 const App: React.FC = () => {
   const [state, setState] = useState<AppState>({
@@ -19,6 +20,32 @@ const App: React.FC = () => {
   });
 
   const [error, setError] = useState<string>('');
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [audioUrl, setAudioUrl] = useState<string>('');
+
+  // Initialize ElevenLabs on component mount
+  useEffect(() => {
+    const apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
+    if (apiKey) {
+      try {
+        initializeElevenLabs(apiKey);
+        console.log('ElevenLabs service initialized successfully');
+      } catch (error) {
+        console.error('Failed to initialize ElevenLabs:', error);
+      }
+    } else {
+      console.warn('ElevenLabs API key not found in environment variables');
+    }
+  }, []);
+
+  // Cleanup audio URL on unmount
+  useEffect(() => {
+    return () => {
+      if (audioUrl) {
+        URL.revokeObjectURL(audioUrl);
+      }
+    };
+  }, [audioUrl]);
 
   const handleQuestionChange = (question: string) => {
     setState(prev => ({ ...prev, question }));
@@ -103,9 +130,45 @@ const App: React.FC = () => {
     }
   };
 
-  const handlePlayVoice = () => {
-    // Placeholder for ElevenLabs integration
-    alert('Voice summary feature coming soon! This will integrate with ElevenLabs for audio playback of the response.');
+  const handlePlayVoice = async () => {
+    if (!state.response.trim()) {
+      setError('No response available to convert to speech.');
+      return;
+    }
+
+    try {
+      setIsPlayingAudio(true);
+      setError('');
+
+      const elevenLabsService = getElevenLabsService();
+      
+      // Clean up previous audio URL if it exists
+      if (audioUrl) {
+        elevenLabsService.cleanupAudioUrl(audioUrl);
+      }
+
+      // Convert text to speech
+      const audioResponse = await elevenLabsService.textToSpeech(state.response);
+      
+      setAudioUrl(audioResponse.audioUrl);
+
+      // Create and play audio
+      const audio = new Audio(audioResponse.audioUrl);
+      audio.onended = () => {
+        setIsPlayingAudio(false);
+      };
+      audio.onerror = () => {
+        setIsPlayingAudio(false);
+        setError('Failed to play audio. Please try again.');
+      };
+      
+      await audio.play();
+
+    } catch (error) {
+      console.error('Voice playback error:', error);
+      setError(error instanceof Error ? error.message : 'Failed to convert text to speech');
+      setIsPlayingAudio(false);
+    }
   };
 
   const getStateName = (stateCode: string): string => {
@@ -152,6 +215,7 @@ const App: React.FC = () => {
           uploadedFileName={state.uploadedFile?.name}
           onLanguageChange={handleLanguageChange}
           onPlayVoice={handlePlayVoice}
+          isPlayingAudio={isPlayingAudio}
         />
       </main>
       

@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@sentry/react": "^9.31.0",
+    "@sentry/tracing": "^7.120.3",
     "lucide-react": "^0.344.0",
     "mammoth": "^1.6.0",
     "pdf-parse": "^1.1.1",

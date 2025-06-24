@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Volume2, Globe, FileText, MapPin } from 'lucide-react';
+import { Volume2, Globe, FileText, MapPin, Loader2 } from 'lucide-react';
 import { Language } from '../types';
 
 interface OutputSectionProps {
@@ -11,6 +11,7 @@ interface OutputSectionProps {
   uploadedFileName?: string;
   onLanguageChange: (language: string) => void;
   onPlayVoice: () => void;
+  isPlayingAudio?: boolean;
 }
 
 const LANGUAGES: Language[] = [
@@ -35,7 +36,8 @@ const OutputSection: React.FC<OutputSectionProps> = ({
   selectedRegion,
   uploadedFileName,
   onLanguageChange,
-  onPlayVoice
+  onPlayVoice,
+  isPlayingAudio = false
 }) => {
   if (!response) {
     return (
@@ -82,10 +84,21 @@ const OutputSection: React.FC<OutputSectionProps> = ({
           <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
             <button
               onClick={onPlayVoice}
-              className="flex items-center justify-center space-x-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+              disabled={isPlayingAudio}
+              className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg ${
+                isPlayingAudio 
+                  ? 'bg-gray-400 cursor-not-allowed' 
+                  : 'bg-green-600 hover:bg-green-700 text-white'
+              }`}
             >
-              <Volume2 className="w-4 h-4" />
-              <span className="text-sm font-medium">Play Voice Summary</span>
+              {isPlayingAudio ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Volume2 className="w-4 h-4" />
+              )}
+              <span className="text-sm font-medium">
+                {isPlayingAudio ? 'Converting...' : 'Play Voice Summary'}
+              </span>
             </button>
             <div className="flex items-center space-x-2">
               <Globe className="w-4 h-4 text-gray-600" />

@@ -19,10 +19,18 @@ class ElevenLabsService {
     this.apiKey = config.apiKey;
     this.voiceId = config.voiceId || '21m00Tcm4TlvDq8ikWAM'; // Default voice (Rachel)
     this.modelId = config.modelId || 'eleven_monolingual_v1';
+    console.log('[ElevenLabsService] Initialized with API Key:', this.apiKey);
   }
 
   async textToSpeech(text: string): Promise<AudioResponse> {
     try {
+      console.log('[ElevenLabsService] Using API Key:', this.apiKey); // Debug log
+      // Remove markdown symbols for TTS clarity
+      const cleanText = text
+        .replace(/[#*_`~\[\]()>\-]/g, '') // Remove markdown special chars
+        .replace(/\n{2,}/g, '\n') // Collapse multiple newlines
+        .replace(/\n/g, '. '); // Convert newlines to pauses
+
       const response = await fetch(`${this.baseUrl}/text-to-speech/${this.voiceId}`, {
         method: 'POST',
         headers: {
@@ -31,7 +39,7 @@ class ElevenLabsService {
           'xi-api-key': this.apiKey,
         },
         body: JSON.stringify({
-          text: text,
+          text: cleanText,
           model_id: this.modelId,
           voice_settings: {
             stability: 0.5,

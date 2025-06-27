@@ -1,21 +1,31 @@
 import React from 'react';
 import { Scale } from 'lucide-react';
+import { useI18n } from '../contexts/I18nContext';
 
 const Header: React.FC = () => {
+  const { t } = useI18n();
+
   return (
     <header className="bg-white shadow-sm border-b border-blue-100">
-      <div className="max-w-6xl mx-auto px-4 py-6">
-        <div className="text-center">
-          <div className="flex items-center justify-center mb-2">
-            <Scale className="w-8 h-8 text-blue-600 mr-3" />
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-              CivicScan
-            </h1>
+      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+        {/* Logo and Tagline */}
+        <div className="flex items-center space-x-3">
+          <Scale className="w-8 h-8 text-blue-600 mr-1" />
+          <div className="flex flex-col">
+            <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-teal-600 bg-clip-text text-transparent">
+              {t('app.name')}
+            </span>
+            <span className="text-xs text-gray-500 font-medium leading-tight">
+              {t('app.tagline')}
+            </span>
           </div>
-          <p className="text-lg md:text-xl text-gray-600 font-medium">
-            Decode Laws. Understand Rights. Get Answers.
-          </p>
         </div>
+        {/* Navigation Links */}
+        <nav className="hidden md:flex items-center space-x-8">
+          <a href="#" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+            {t('header.browseTopics')}
+          </a>
+        </nav>
       </div>
     </header>
   );

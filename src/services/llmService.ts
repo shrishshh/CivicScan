@@ -75,4 +75,6 @@ export class LLMService {
       throw new Error(`Failed to analyze your question: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
+
+  // If you have a function that builds the analysis result as JSX, add a function that returns the same content as a plain string (e.g., numbered list, etc). Export this function for use in App.tsx.
 }

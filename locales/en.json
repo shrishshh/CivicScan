@@ -42,14 +42,7 @@
     "playing": "Playing...",
     "securityNote": "🔒 Your information is secure and confidential"
   },
-  "exampleQuestions": [
-    "What are my rights as a tenant in this region?",
-    "How do I file for unemployment benefits?",
-    "What are the requirements for starting a small business?",
-    "How do I register to vote?",
-    "What are my consumer protection rights?",
-    "How do I file a small claims court case?"
-  ],
+  "exampleQuestions": "What are my rights as a tenant in this region?,How do I file for unemployment benefits?,What are the requirements for starting a small business?,How do I register to vote?,What are my consumer protection rights?,How do I file a small claims court case?",
   "response": {
     "title": "Analysis Result",
     "languageLabel": "Language:",

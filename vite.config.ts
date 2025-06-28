@@ -11,5 +11,6 @@ export default defineConfig({
     proxy: {
       '/api/translate': 'http://localhost:3001',
     },
+    historyApiFallback: true,
   },
 });

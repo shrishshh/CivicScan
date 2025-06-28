@@ -1,49 +1,49 @@
 {
   "app": {
     "name": "CivicScan",
-    "tagline": "Legal Information Made Simple"
+    "tagline": "Juristische Informationen einfach gemacht"
   },
   "header": {
-    "browseTopics": "Browse Topics",
-    "legalNews": "Legal News",
-    "resources": "Resources"
+    "browseTopics": "Themen durchsuchen",
+    "legalNews": "Rechtsnachrichten",
+    "resources": "Ressourcen"
   },
   "hero": {
-    "trustedBadge": "✨ Trusted by users worldwide",
-    "title": "Decode Laws. Understand Rights. Get Instant Answers.",
-    "subtitle": "Navigate the complex world of legal information with confidence. Get clear, region-specific answers to your legal and civic questions in seconds, not hours.",
-    "searchPlaceholder": "Quick search: 'tenant rights', 'small business license', 'unemployment benefits'...",
-    "searchButton": "Search"
+    "trustedBadge": "✨ Von Nutzern weltweit vertraut",
+    "title": "Gesetze entschlüsseln. Rechte verstehen. Sofortige Antworten erhalten.",
+    "subtitle": "Navigieren Sie selbstbewusst durch die komplexe Welt der juristischen Informationen. Erhalten Sie klare, regionsspezifische Antworten auf Ihre rechtlichen und bürgerlichen Fragen in Sekunden, nicht Stunden.",
+    "searchPlaceholder": "Schnellsuche: 'Mietrechte', 'Gewerbeschein', 'Arbeitslosengeld'...",
+    "searchButton": "Suchen"
   },
   "stats": {
-    "questionsAnswered": "Questions Answered",
-    "available": "Available",
-    "countriesCovered": "Countries Covered"
+    "questionsAnswered": "Beantwortete Fragen",
+    "available": "Verfügbar",
+    "countriesCovered": "Abgedeckte Länder"
   },
   "form": {
-    "title": "Ask Your Legal Question",
-    "subtitle": "Get personalized legal information for your specific situation",
-    "questionLabel": "Describe your legal question",
-    "questionPlaceholder": "Be as specific as possible. For example: 'My landlord wants to increase my rent by 30% with only 15 days notice. Is this legal in California?'",
-    "popularQuestionsLabel": "Popular questions to get you started:",
-    "countryLabel": "Country",
-    "countryPlaceholder": "Select your country...",
-    "regionLabel": "State/Region",
-    "regionPlaceholder": "Select your region...",
-    "uploadLabel": "Upload supporting documents (optional)",
-    "uploadDescription": "Upload contracts, notices, or relevant documents",
-    "uploadFormats": "Supports PDF, DOC, DOCX, JPG, PNG (Max 10MB)",
-    "chooseFiles": "Choose Files",
-    "selectedFile": "Selected:",
-    "remove": "Remove",
-    "submitButton": "Get Instant Legal Information",
-    "analyzing": "Analyzing...",
-    "playVoiceButton": "Play Voice Summary",
-    "playing": "Playing...",
-    "securityNote": "🔒 Your information is secure and confidential"
+    "title": "Stellen Sie Ihre Rechtsfrage",
+    "subtitle": "Erhalten Sie personalisierte juristische Informationen für Ihre spezifische Situation",
+    "questionLabel": "Beschreiben Sie Ihre Rechtsfrage",
+    "questionPlaceholder": "Seien Sie so spezifisch wie möglich. Zum Beispiel: 'Mein Vermieter möchte meine Miete um 30% mit nur 15 Tagen Vorankündigung erhöhen. Ist das in Kalifornien legal?'",
+    "popularQuestionsLabel": "Beliebte Fragen zum Einstieg:",
+    "countryLabel": "Land",
+    "countryPlaceholder": "Wählen Sie Ihr Land...",
+    "regionLabel": "Bundesland/Region",
+    "regionPlaceholder": "Wählen Sie Ihre Region...",
+    "uploadLabel": "Unterstützende Dokumente hochladen (optional)",
+    "uploadDescription": "Laden Sie Verträge, Mitteilungen oder relevante Dokumente hoch",
+    "uploadFormats": "Unterstützt PDF, DOC, DOCX, JPG, PNG (max. 10MB)",
+    "chooseFiles": "Dateien auswählen",
+    "selectedFile": "Ausgewählt:",
+    "remove": "Entfernen",
+    "submitButton": "Sofortige juristische Informationen erhalten",
+    "analyzing": "Analysiere...",
+    "playVoiceButton": "Sprachzusammenfassung abspielen",
+    "playing": "Wird abgespielt...",
+    "securityNote": "🔒 Ihre Informationen sind sicher und vertraulich"
   },
   "exampleQuestions": [
-    "What are my rights as a tenant in this region?",
+    "Was sind meine Rechte als Mieter in dieser Region?",
     "How do I file for unemployment benefits?",
     "What are the requirements for starting a small business?",
     "How do I register to vote?",
@@ -51,58 +51,58 @@
     "How do I file a small claims court case?"
   ],
   "response": {
-    "title": "Analysis Result",
-    "languageLabel": "Language:",
-    "translating": "Translating...",
-    "disclaimer": "Important: This information is for general guidance only and should not be considered legal advice. For specific legal matters, please consult with a qualified attorney licensed in your region."
+    "title": "Analyseergebnis",
+    "languageLabel": "Sprache:",
+    "translating": "Übersetze...",
+    "disclaimer": "Wichtig: Diese Informationen dienen nur zur allgemeinen Orientierung und sollten nicht als Rechtsberatung betrachtet werden. Für spezifische rechtliche Angelegenheiten wenden Sie sich bitte an einen qualifizierten Anwalt in Ihrer Region."
   },
   "recentQuestions": {
-    "title": "Recently Asked Questions",
-    "subtitle": "See what others in your community are asking about",
-    "viewAnswer": "View Answer"
+    "title": "Kürzlich gestellte Fragen",
+    "subtitle": "Sehen Sie, was andere in Ihrer Community fragen",
+    "viewAnswer": "Antwort anzeigen"
   },
   "footer": {
-    "description": "Making legal information accessible, understandable, and actionable for everyone. Empowering citizens with knowledge of their rights and responsibilities.",
+    "description": "Juristische Informationen für alle zugänglich, verständlich und umsetzbar machen. Bürger mit Wissen über ihre Rechte und Pflichten stärken.",
     "newsletter": "📧 Newsletter",
     "mobileApp": "📱 Mobile App",
-    "legalResources": "Legal Resources",
-    "legalGuides": "Legal Guides",
+    "legalResources": "Juristische Ressourcen",
+    "legalGuides": "Juristische Leitfäden",
     "faq": "FAQ",
-    "documentTemplates": "Document Templates",
-    "legalGlossary": "Legal Glossary",
-    "supportLegal": "Support & Legal",
-    "contactSupport": "Contact Support",
-    "privacyPolicy": "Privacy Policy",
-    "termsOfService": "Terms of Service",
-    "legalDisclaimer": "Legal Disclaimer",
-    "copyright": "© 2025 CivicScan. This tool provides general information only and should not be considered legal advice.",
-    "attorneyNote": "Always consult with a qualified attorney for specific legal matters.",
-    "soc2Compliant": "✓ SOC 2 Compliant",
-    "gdprReady": "🔒 GDPR Ready"
+    "documentTemplates": "Dokumentvorlagen",
+    "legalGlossary": "Juristisches Glossar",
+    "supportLegal": "Support & Rechtliches",
+    "contactSupport": "Support kontaktieren",
+    "privacyPolicy": "Datenschutzrichtlinie",
+    "termsOfService": "Nutzungsbedingungen",
+    "legalDisclaimer": "Rechtlicher Hinweis",
+    "copyright": "© 2025 CivicScan. Dieses Tool bietet nur allgemeine Informationen und sollte nicht als Rechtsberatung betrachtet werden.",
+    "attorneyNote": "Konsultieren Sie immer einen qualifizierten Anwalt für spezifische rechtliche Angelegenheiten.",
+    "soc2Compliant": "✓ SOC 2 konform",
+    "gdprReady": "🔒 DSGVO bereit"
   },
   "errors": {
-    "noQuestionOrFile": "Please enter a question or upload a document.",
-    "noCountry": "Please select a country.",
-    "noRegion": "Please select a region/state for location-specific information.",
-    "documentProcessingFailed": "Document processing failed: {error}",
-    "unexpectedError": "An unexpected error occurred. Please try again.",
-    "noResponseForVoice": "No response available to convert to speech.",
-    "audioPlaybackFailed": "Failed to play audio. Please try again.",
-    "textToSpeechFailed": "Failed to convert text to speech",
-    "translationFailed": "Translation failed: {error}",
-    "noTranslatedText": "Translation failed: No translated text returned.",
-    "translationError": "Translation failed."
+    "noQuestionOrFile": "Bitte geben Sie eine Frage ein oder laden Sie ein Dokument hoch.",
+    "noCountry": "Bitte wählen Sie ein Land aus.",
+    "noRegion": "Bitte wählen Sie eine Region/ein Bundesland für standortspezifische Informationen aus.",
+    "documentProcessingFailed": "Dokumentenverarbeitung fehlgeschlagen: {error}",
+    "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+    "noResponseForVoice": "Keine Antwort verfügbar, um in Sprache umzuwandeln.",
+    "audioPlaybackFailed": "Audio konnte nicht abgespielt werden. Bitte versuchen Sie es erneut.",
+    "textToSpeechFailed": "Text-zu-Sprache-Umwandlung fehlgeschlagen",
+    "translationFailed": "Übersetzung fehlgeschlagen: {error}",
+    "noTranslatedText": "Übersetzung fehlgeschlagen: Kein übersetzter Text zurückgegeben.",
+    "translationError": "Übersetzung fehlgeschlagen."
   },
   "languages": {
-    "en": "English",
-    "es": "Spanish",
-    "fr": "French",
-    "de": "German",
+    "en": "Englisch",
+    "es": "Spanisch",
+    "fr": "Französisch",
+    "de": "Deutsch",
     "hi": "Hindi",
-    "zh": "Chinese",
-    "ar": "Arabic",
-    "ru": "Russian",
-    "pt": "Portuguese",
-    "ja": "Japanese"
+    "zh": "Chinesisch",
+    "ar": "Arabisch",
+    "ru": "Russisch",
+    "pt": "Portugiesisch",
+    "ja": "Japanisch"
   }
 } 

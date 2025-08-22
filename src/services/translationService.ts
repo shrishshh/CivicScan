@@ -33,45 +33,8 @@ class TranslationService {
     if (!text.trim()) return text;
     if (targetLang === sourceLang) return text;
 
-    const cacheKey = this.getCacheKey(text, targetLang);
-    if (this.cache.has(cacheKey)) {
-      return this.cache.get(cacheKey)!;
-    }
-
-    try {
-      const response = await fetch('/api/translate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text,
-          target_lang: targetLang,
-          source_lang: sourceLang,
-        } as TranslationRequest),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Translation request failed: ${response.status}`);
-      }
-
-      const data: TranslationResponse = await response.json();
-
-      if (data.error) {
-        console.error('Translation error:', data.error);
-        return text; // Return original text on error
-      }
-
-      if (data.translated_text) {
-        this.cache.set(cacheKey, data.translated_text);
-        return data.translated_text;
-      }
-
-      return text; // Return original text if no translation
-    } catch (error) {
-      console.error('Translation service error:', error);
-      return text; // Return original text on error
-    }
+    // Translation API removed, always return original text
+    return text;
   }
 
   public async translateObject(obj: any, targetLang: string, sourceLang: string = 'en'): Promise<any> {

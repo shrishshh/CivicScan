@@ -11,14 +11,13 @@ import {
   Star,
   ArrowRight,
   BookOpen,
-  MessageCircle,
-  Award,
+  MessageCircle
 } from "lucide-react";
 import { AppState, AnalysisRequest, Country } from "../types";
 import { DocumentProcessor } from "../services/documentProcessor";
 import { LLMService } from "../services/llmService";
 import { StorageService } from "../services/storageService";
-import { initializeElevenLabs, getElevenLabsService } from "../services/elevenLabsService";
+// Removed ElevenLabs imports
 import { useI18n } from "../contexts/I18nContext";
 import { LanguageSelector } from "../components/LanguageSelector";
 import ReactMarkdown from 'react-markdown';
@@ -30,16 +29,7 @@ interface PopularTopicType {
 }
 
 const LANGUAGES = [
-  { code: 'en', name: 'English' },
-  { code: 'es', name: 'Spanish' },
-  { code: 'fr', name: 'French' },
-  { code: 'de', name: 'German' },
-  { code: 'hi', name: 'Hindi' },
-  { code: 'zh', name: 'Chinese' },
-  { code: 'ar', name: 'Arabic' },
-  { code: 'ru', name: 'Russian' },
-  { code: 'pt', name: 'Portuguese' },
-  { code: 'ja', name: 'Japanese' },
+  { code: 'en', name: 'English' }
 ];
 
 export default function HomePage() {
@@ -54,72 +44,34 @@ export default function HomePage() {
     isLoading: false,
   });
   const [error, setError] = useState<string>("");
-  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-  const [audioUrl, setAudioUrl] = useState<string>("");
-  const [countries, setCountries] = useState<Country[]>([]);
+  // Removed audio state
   const [regionOptions, setRegionOptions] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [translatedResult, setTranslatedResult] = useState<string | null>(null);
   const [isTranslating, setIsTranslating] = useState(false);
-  const [isAudioPaused, setIsAudioPaused] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    fetch("/countries+states.json")
-      .then((res) => res.json())
-      .then((data: Country[]) => setCountries(data))
-      .catch((err) => console.error("Failed to load countries", err));
+    // Hardcode United States states
+    setRegionOptions([
+      "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
+      "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland",
+      "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
+      "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina",
+      "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+    ]);
   }, []);
 
-  useEffect(() => {
-    const country = countries.find((c) => c.name === state.selectedCountry);
-    setRegionOptions(country?.states || []);
-  }, [state.selectedCountry, countries]);
+  // Removed ElevenLabs initialization
 
-  useEffect(() => {
-    const apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
-    if (apiKey) {
-      try {
-        initializeElevenLabs(apiKey);
-        console.log("ElevenLabs service initialized successfully");
-      } catch (error) {
-        console.error("Failed to initialize ElevenLabs:", error);
-      }
-    } else {
-      console.warn("ElevenLabs API key not found in environment variables");
-    }
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (audioUrl) {
-        URL.revokeObjectURL(audioUrl);
-      }
-    };
-  }, [audioUrl]);
+  // Removed audio cleanup
 
   useEffect(() => {
     if (state.response) {
-      setIsTranslating(true);
-      fetch('/api/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text: state.response,
-          target_lang: locale,
-        }),
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.translated_text) {
-            setTranslatedResult(data.translated_text);
-          } else {
-            setTranslatedResult(t('errors.translationFailed', { error: data.error || 'Unknown error' }));
-          }
-        })
-        .catch(() => setTranslatedResult(t('errors.translationError')))
-        .finally(() => setIsTranslating(false));
+    setIsTranslating(true);
+    // Translation API removed, fallback to original text
+    setTranslatedResult(state.response);
+    setIsTranslating(false);
     } else {
       setTranslatedResult(null);
     }
@@ -130,9 +82,7 @@ export default function HomePage() {
     setError("");
   };
 
-  const handleCountryChange = (selectedCountry: string) => {
-    setState((prev) => ({ ...prev, selectedCountry, selectedRegion: "" }));
-  };
+  // Country is always United States
 
   const handleRegionChange = (selectedRegion: string) => {
     setState((prev) => ({ ...prev, selectedRegion }));
@@ -188,48 +138,7 @@ export default function HomePage() {
     }
   };
 
-  const handlePlayVoice = async () => {
-    if (!state.response.trim()) {
-      setError(t('errors.noResponseForVoice'));
-      return;
-    }
-    try {
-      setIsPlayingAudio(true);
-      setIsAudioPaused(false);
-      setError("");
-      const elevenLabsService = getElevenLabsService();
-      if (audioUrl) {
-        elevenLabsService.cleanupAudioUrl(audioUrl);
-      }
-      const audioResponse = await elevenLabsService.textToSpeech(state.response);
-      setAudioUrl(audioResponse.audioUrl);
-      const audio = new Audio(audioResponse.audioUrl);
-      audioRef.current = audio;
-      audio.onended = () => setIsPlayingAudio(false);
-      audio.onpause = () => setIsAudioPaused(true);
-      audio.onplay = () => setIsAudioPaused(false);
-      audio.onerror = () => {
-        setIsPlayingAudio(false);
-        setError(t('errors.audioPlaybackFailed'));
-      };
-      await audio.play();
-    } catch (error) {
-      setError(error instanceof Error ? error.message : t('errors.textToSpeechFailed'));
-      setIsPlayingAudio(false);
-    }
-  };
-
-  const handlePauseResumeAudio = () => {
-    if (audioRef.current) {
-      if (!audioRef.current.paused) {
-        audioRef.current.pause();
-        setIsAudioPaused(true);
-      } else {
-        audioRef.current.play();
-        setIsAudioPaused(false);
-      }
-    }
-  };
+  // Removed Play Voice and Pause/Resume handlers
 
   const exampleQuestions = t('exampleQuestions').split(', ');
 
@@ -364,27 +273,17 @@ export default function HomePage() {
                       </div>
                     </div>
 
-                    {/* Location Selection */}
+                    {/* Location Selection - United States constant, states dropdown */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-3">
-                        <label htmlFor="country" className="text-base font-medium text-gray-900 flex items-center">
+                        <label className="text-base font-medium text-gray-900 flex items-center">
                           <Globe className="h-4 w-4 mr-2 text-purple-600" />
-                          {t('form.countryLabel')} <span className="text-red-500 ml-1">*</span>
+                          {t('form.countryLabel')}
                         </label>
-                        <select
-                          id="country"
-                          value={state.selectedCountry}
-                          onChange={e => handleCountryChange(e.target.value)}
-                          className="h-12 border-2 border-gray-200 focus:border-purple-500 focus:ring-purple-500 rounded-xl w-full px-4 text-base"
-                          required
-                        >
-                          <option value="">{t('form.countryPlaceholder')}</option>
-                          {countries.map(country => (
-                            <option key={country.name} value={country.name}>{country.name}</option>
-                          ))}
-                        </select>
+                        <div className="h-12 flex items-center px-4 text-base rounded-xl bg-gray-100 border border-gray-200">
+                          United States
+                        </div>
                       </div>
-
                       <div className="space-y-3">
                         <label htmlFor="region" className="text-base font-medium text-gray-900 flex items-center">
                           <FileText className="h-4 w-4 mr-2 text-purple-600" />
@@ -396,7 +295,6 @@ export default function HomePage() {
                           onChange={e => handleRegionChange(e.target.value)}
                           className="h-12 border-2 border-gray-200 focus:border-purple-500 focus:ring-purple-500 rounded-xl w-full px-4 text-base"
                           required
-                          disabled={!state.selectedCountry}
                         >
                           <option value="">{t('form.regionPlaceholder')}</option>
                           {regionOptions.map(region => (
@@ -474,28 +372,7 @@ export default function HomePage() {
                       )}
                     </button>
 
-                    {/* Play Voice Button */}
-                    {state.response && (
-                      <div className="w-full flex flex-col gap-2">
-                        <button
-                          type="button"
-                          onClick={handlePlayVoice}
-                          disabled={isPlayingAudio}
-                          className="w-full h-12 text-base font-semibold bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl text-white flex items-center justify-center disabled:bg-gray-400 disabled:cursor-not-allowed"
-                        >
-                          {isPlayingAudio ? t('form.playing') : t('form.playVoiceButton')}
-                        </button>
-                        {isPlayingAudio && (
-                          <button
-                            type="button"
-                            onClick={handlePauseResumeAudio}
-                            className="w-full h-10 text-base font-semibold bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 shadow transition-all duration-300 rounded-xl text-white flex items-center justify-center"
-                          >
-                            {isAudioPaused ? 'Resume Audio' : 'Pause Audio'}
-                          </button>
-                        )}
-                      </div>
-                    )}
+                    {/* Play Voice Button removed */}
 
                     <p className="text-center text-sm text-gray-500">{t('form.securityNote')}</p>
                   </div>

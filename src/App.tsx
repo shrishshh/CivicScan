@@ -1,29 +1,24 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Scale,
-  Upload as UploadIcon,
   Globe,
   FileText,
   ChevronRight,
-  Search,
   TrendingUp,
   Clock,
-  Star,
   ArrowRight,
   BookOpen,
   MessageCircle,
   Award,
+  Star,
+  Search
 } from "lucide-react";
 import { AppState, AnalysisRequest, Country } from "./types";
 import { DocumentProcessor } from "./services/documentProcessor";
 import { LLMService } from "./services/llmService";
 import { StorageService } from "./services/storageService";
-import { initializeElevenLabs, getElevenLabsService } from "./services/elevenLabsService";
 import { useI18n } from "./contexts/I18nContext";
-import { LanguageSelector } from "./components/LanguageSelector";
-import { TranslatableText } from "./components/TranslatableText";
 import Header from "./components/Header";
-import ReactMarkdown from 'react-markdown';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import LegalGuides from './pages/LegalGuides';
 import FAQ from './pages/FAQ';
@@ -34,27 +29,6 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import LegalDisclaimer from './pages/LegalDisclaimer';
 import HomePage from './pages/HomePage';
-
-interface PopularTopicType {
-  title: string;
-  count: number;
-  color: string;
-}
-
-// Add supported languages
-const LANGUAGES = [
-  { code: 'en', name: 'English' },
-  { code: 'es', name: 'Spanish' },
-  { code: 'fr', name: 'French' },
-  { code: 'de', name: 'German' },
-  { code: 'hi', name: 'Hindi' },
-  { code: 'zh', name: 'Chinese' },
-  { code: 'ar', name: 'Arabic' },
-  { code: 'ru', name: 'Russian' },
-  { code: 'pt', name: 'Portuguese' },
-  { code: 'ja', name: 'Japanese' },
-  // Add more as needed
-];
 
 function Footer() {
   const { t } = useI18n();
@@ -179,18 +153,11 @@ export default function App() {
     isLoading: false,
   });
   const [error, setError] = useState<string>("");
-  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-  const [audioUrl, setAudioUrl] = useState<string>("");
   const [countries, setCountries] = useState<Country[]>([]);
   const [regionOptions, setRegionOptions] = useState<string[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [searchQuery, setSearchQuery] = useState("");
   const [translatedResult, setTranslatedResult] = useState<string | null>(null);
   const [isTranslating, setIsTranslating] = useState(false);
-  const [isAudioPaused, setIsAudioPaused] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Load countries from JSON
   useEffect(() => {
     fetch("/countries+states.json")
       .then((res) => res.json())
@@ -203,52 +170,11 @@ export default function App() {
     setRegionOptions(country?.states || []);
   }, [state.selectedCountry, countries]);
 
-  // Initialize ElevenLabs on component mount
-  useEffect(() => {
-    const apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
-    if (apiKey) {
-      try {
-        initializeElevenLabs(apiKey);
-        console.log("ElevenLabs service initialized successfully");
-      } catch (error) {
-        console.error("Failed to initialize ElevenLabs:", error);
-      }
-    } else {
-      console.warn("ElevenLabs API key not found in environment variables");
-    }
-  }, []);
-
-  // Cleanup audio URL on unmount
-  useEffect(() => {
-    return () => {
-      if (audioUrl) {
-        URL.revokeObjectURL(audioUrl);
-      }
-    };
-  }, [audioUrl]);
-
-  // Translate AI answer when language or answer changes
   useEffect(() => {
     if (state.response) {
       setIsTranslating(true);
-      fetch('/api/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text: state.response,
-          target_lang: locale,
-        }),
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.translated_text) {
-            setTranslatedResult(data.translated_text);
-          } else {
-            setTranslatedResult(t('errors.translationFailed', { error: data.error || 'Unknown error' }));
-          }
-        })
-        .catch(() => setTranslatedResult(t('errors.translationError')))
-        .finally(() => setIsTranslating(false));
+      setTranslatedResult(state.response);
+      setIsTranslating(false);
     } else {
       setTranslatedResult(null);
     }
@@ -317,71 +243,28 @@ export default function App() {
     }
   };
 
-  const handlePlayVoice = async () => {
-    if (!state.response.trim()) {
-      setError(t('errors.noResponseForVoice'));
-      return;
-    }
-    try {
-      setIsPlayingAudio(true);
-      setIsAudioPaused(false);
-      setError("");
-      const elevenLabsService = getElevenLabsService();
-      if (audioUrl) {
-        elevenLabsService.cleanupAudioUrl(audioUrl);
-      }
-      const audioResponse = await elevenLabsService.textToSpeech(state.response);
-      setAudioUrl(audioResponse.audioUrl);
-      const audio = new Audio(audioResponse.audioUrl);
-      audioRef.current = audio;
-      audio.onended = () => setIsPlayingAudio(false);
-      audio.onpause = () => setIsAudioPaused(true);
-      audio.onplay = () => setIsAudioPaused(false);
-      audio.onerror = () => {
-        setIsPlayingAudio(false);
-        setError(t('errors.audioPlaybackFailed'));
-      };
-      await audio.play();
-    } catch (error) {
-      setError(error instanceof Error ? error.message : t('errors.textToSpeechFailed'));
-      setIsPlayingAudio(false);
-    }
-  };
-
-  const handlePauseResumeAudio = () => {
-    if (audioRef.current) {
-      if (!audioRef.current.paused) {
-        audioRef.current.pause();
-        setIsAudioPaused(true);
-      } else {
-        audioRef.current.play();
-        setIsAudioPaused(false);
-      }
-    }
-  };
-
   // UI data (examples, topics, etc.)
   const exampleQuestions = t('exampleQuestions').split(', ');
 
-  const [popularTopics, setPopularTopics] = useState<PopularTopicType[]>([]);
+  const [popularTopics, setPopularTopics] = useState<{ title: string; count: number; color: string }[]>([]);
   const [totalQuestions, setTotalQuestions] = useState<number>(0);
   useEffect(() => {
     fetch('/popular_topics.json')
       .then(res => res.json())
       .then(data => {
         setPopularTopics(data);
-        setTotalQuestions(data.reduce((sum: number, topic: PopularTopicType) => sum + topic.count, 0));
+        setTotalQuestions(data.reduce((sum: number, topic: { count: number }) => sum + topic.count, 0));
       })
       .catch(err => console.error('Failed to load popular topics', err));
   }, []);
-  
+
   // Example of dynamic content that can be translated
   const recentQuestions = [
     { question: "Can my landlord increase rent without notice?", region: "California", time: "2 hours ago" },
     { question: "What documents do I need for unemployment benefits?", region: "New York", time: "4 hours ago" },
     { question: "How to trademark a business name?", region: "Texas", time: "6 hours ago" },
   ];
-  
+
   const testimonials = [
     {
       name: "Sarah Chen",
@@ -405,7 +288,7 @@ export default function App() {
       rating: 5,
     },
   ];
-  
+
   const stats = [
     { number: `${totalQuestions.toLocaleString()}+`, label: t('stats.questionsAnswered'), icon: <MessageCircle className="h-6 w-6" /> },
     { number: "24/7", label: t('stats.available'), icon: <Clock className="h-6 w-6" /> },

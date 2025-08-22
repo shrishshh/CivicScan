@@ -101,9 +101,7 @@ export default function HomePage() {
       if (!state.question.trim() && !state.uploadedFile) {
         throw new Error(t('errors.noQuestionOrFile'));
       }
-      if (!state.selectedCountry) {
-        throw new Error(t('errors.noCountry'));
-      }
+  // Country is always United States, no need to check
       if (!state.selectedRegion) {
         throw new Error(t('errors.noRegion'));
       }
@@ -124,7 +122,7 @@ export default function HomePage() {
       const analysisRequest: AnalysisRequest = {
         question: state.question.trim(),
         documentText: documentText || undefined,
-        country: state.selectedCountry,
+        country: "United States",
         region: state.selectedRegion,
         fileName: state.uploadedFile?.name,
       };
@@ -359,7 +357,7 @@ export default function HomePage() {
                     <button
                       type="button"
                       onClick={handleAnalyze}
-                      disabled={!state.selectedCountry || !state.selectedRegion || !state.question.trim() || state.isLoading}
+                      disabled={!state.selectedRegion || !state.question.trim() || state.isLoading}
                       className="w-full h-16 text-lg font-semibold bg-gradient-to-r from-purple-600 to-teal-600 hover:from-purple-700 hover:to-teal-700 shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl text-white flex items-center justify-center disabled:bg-gray-400 disabled:cursor-not-allowed"
                     >
                       {state.isLoading ? (
@@ -408,7 +406,10 @@ export default function HomePage() {
               <LanguageSelector />
             </div>
             <div className="bg-gray-50 rounded-xl p-6 max-h-96 overflow-y-auto">
-              <div className="prose prose-blue max-w-none whitespace-pre-wrap text-gray-800 leading-relaxed">
+              <div className="prose prose-blue max-w-none whitespace-pre-wrap text-gray-800 leading-normal" style={{marginBottom: 0}}>
+                <style>{`
+                  .prose p { margin-top: 0.5em; margin-bottom: 0.5em; }
+                `}</style>
                 {isTranslating ? t('response.translating') : (
                   <ReactMarkdown>{translatedResult || state.response}</ReactMarkdown>
                 )}
